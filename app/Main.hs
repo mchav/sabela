@@ -1,45 +1,61 @@
 module Main (main) where
 
+import qualified Data.Text.IO as TIO
 import System.Environment (getArgs, getProgName)
 import System.Exit (exitFailure)
-import qualified Data.Text.IO as TIO
+import System.FilePath (takeExtension)
 
-import HScript.Parse (parseScript, ScriptFile(..))
+import HScript.Notebook (debugNotebook, runNotebook)
+import HScript.Parse (ScriptFile (..), parseScript)
 import HScript.Resolve (resolveRemotes)
-import HScript.Transform (toGhciScript)
 import HScript.Run (runScript)
+import HScript.Transform (toGhciScript)
 
 main :: IO ()
 main = do
-  args <- getArgs
-  case args of
-    ["--debug", path] -> debug path
-    [path]            -> run path
-    _                 -> do
-      prog <- getProgName
-      putStrLn $ "Usage: " ++ prog ++ " [--debug] <script.hs>"
-      exitFailure
+    args <- getArgs
+    case args of
+        ["--debug", path] -> dispatch True path
+        [path] -> dispatch False path
+        _ -> usage
+
+dispatch :: Bool -> FilePath -> IO ()
+dispatch isDebug path =
+    case takeExtension path of
+        ".md" -> if isDebug then debugNotebook path else runNotebook path
+        ".markdown" -> if isDebug then debugNotebook path else runNotebook path
+        _ -> if isDebug then debug path else run path
 
 run :: FilePath -> IO ()
 run path = do
-  input <- TIO.readFile path
-  case parseScript path input of
-    Left err -> do
-      putStrLn $ "hscript: parse error:\n" ++ err
-      exitFailure
-    Right sf -> do
-      resolved <- resolveRemotes (scriptLines sf)
-      let ghci = toGhciScript resolved
-      runScript (sf { scriptLines = resolved }) ghci
+    input <- TIO.readFile path
+    case parseScript path input of
+        Left err -> do
+            putStrLn $ "hscript: parse error:\n" ++ err
+            exitFailure
+        Right sf -> do
+            resolved <- resolveRemotes (scriptLines sf)
+            let ghci = toGhciScript resolved
+            runScript (sf{scriptLines = resolved}) ghci
 
 debug :: FilePath -> IO ()
 debug path = do
-  input <- TIO.readFile path
-  case parseScript path input of
-    Left err -> do
-      putStrLn $ "hscript: parse error:\n" ++ err
-      exitFailure
-    Right sf -> do
-      resolved <- resolveRemotes (scriptLines sf)
-      let ghci = toGhciScript resolved
-      TIO.putStrLn ghci
+    input <- TIO.readFile path
+    case parseScript path input of
+        Left err -> do
+            putStrLn $ "hscript: parse error:\n" ++ err
+            exitFailure
+        Right sf -> do
+            resolved <- resolveRemotes (scriptLines sf)
+            let ghci = toGhciScript resolved
+            TIO.putStrLn ghci
+
+usage :: IO ()
+usage = do
+    prog <- getProgName
+    putStrLn $ "Usage: " ++ prog ++ " [--debug] <script>"
+    putStrLn ""
+    putStrLn "  .ghci / .hs   Run as a GHCi script"
+    putStrLn "  .md           Run as a markdown notebook (output to stdout)"
+    putStrLn "  --debug       Print generated GHCi script without running"
+    exitFailure
