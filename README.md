@@ -20,6 +20,51 @@ cabal install
 
 ## Usage
 
+### Markdown notebook mode
+
+Give hscript a `.md` file and it executes all `` ```haskell `` code blocks in a shared session, inserting results as blockquotes:
+
+````markdown
+# Iris analysis
+
+The code below computes the dimensions of the iris dataframe.
+
+```haskell
+-- cabal: build-depends: base, dataframe, text
+import qualified DataFrame as D
+iris <- D.readParquet "data/iris.parquet"
+D.dimensions iris
+```
+
+That's all it took.
+````
+
+Run it:
+
+```bash
+hscript notebook.md > output.md
+```
+
+Output:
+
+````markdown
+# Iris analysis
+
+The code below computes the dimensions of the iris dataframe.
+
+```haskell
+-- cabal: build-depends: base, dataframe, text
+import qualified DataFrame as D
+iris <- D.readParquet "data/iris.parquet"
+D.dimensions iris
+```
+> (150, 5)
+
+That's all it took.
+````
+
+State carries across blocks, so later blocks can use bindings from earlier ones. Non-haskell code blocks (e.g. `` ```python ``) are left untouched. But similar to ghci you can also override variables.
+
 ### Script mode
 
 Write a `.ghci` or `.hs` file:
@@ -53,42 +98,6 @@ hscript analysis.ghci
 
 Dependencies are resolved similarly to how they are in cabal scripts. Imports, IO binds, expressions, GHCi commands, and Template Haskell splices can appear in any order (note: their order matters relative to each other).
 
-### Markdown notebook mode
-
-Give hscript a `.md` file and it executes all `` ```haskell `` code blocks in a shared session, inserting results as blockquotes:
-
-````markdown
-# Iris analysis
-
-```haskell
--- cabal: build-depends: base, dataframe, text
-import qualified DataFrame as D
-iris <- D.readParquet "data/iris.parquet"
-D.dimensions iris
-```
-````
-
-Run it:
-
-```bash
-hscript notebook.md > output.md
-```
-
-Output:
-
-````markdown
-# Iris analysis
-
-```haskell
--- cabal: build-depends: base, dataframe, text
-import qualified DataFrame as D
-iris <- D.readParquet "data/iris.parquet"
-D.dimensions iris
-```
-> (150, 5)
-````
-
-State carries across blocks, so later blocks can use bindings from earlier ones. Non-haskell code blocks (e.g. `` ```python ``) are left untouched. But similar to ghci you can also override variables.
 
 ## Cabal metadata
 
