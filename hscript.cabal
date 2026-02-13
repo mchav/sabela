@@ -8,6 +8,12 @@ build-type:    Simple
 
 executable hscript
   main-is: Main.hs
+  other-modules: HScript.Markdown
+                 HScript.Notebook
+                 HScript.Parse
+                 HScript.Resolve
+                 HScript.Run
+                 HScript.Transform
   build-depends:      base >= 4 && < 5,
                       megaparsec >= 9.0  && < 10,
                       hscript,

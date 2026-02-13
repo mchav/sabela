@@ -14,8 +14,6 @@ other = D.fromNamedColumns [("key", D.fromList ["K0", "K1", "K2"]), ("B", D.from
 
 $(F.declareColumns other)
 
-print 5
-
 import qualified Data.Text.IO as T
 
 T.putStrLn $ D.toMarkdownTable $ D.innerJoin [F.name key] df other
