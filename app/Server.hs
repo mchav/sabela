@@ -47,5 +47,5 @@ start port staticDir workDir = do
       st <- initState workDir
       rn <- setupReactive st
 
-      putStrLn $ "sabela-server running on http://localhost:" ++ show port
+      putStrLn $ "sabela-server running on http://localhost:" ++ show port ++ "/index.html"
       run port (mkApp st rn staticDir)

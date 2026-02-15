@@ -1,5 +1,0 @@
-# test
-
-```haskell
-putStrLn "Hello!"
-```

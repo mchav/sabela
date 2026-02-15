@@ -1,6 +1,10 @@
 # sabela
 
-Utility for running ad-hoc Haskell scripts or generating Haskell markdown documentation. This cumulatively solves a couple fo problems I've had with other Haskell solutions:
+Utility for running ad-hoc Haskell/GHCi scripts, generating Haskell markdown documentation, and running reactive notebooks.
+
+The design document for the project can be found [here](https://docs.google.com/document/d/1XQyKdhEbzZRCkyKS6efbFY0NgRkneJTpMQXTwklZgso/edit?tab=t.0).
+
+This cumulatively solves a couple of problems I've had with other Haskell solutions:
 
 * literate Haskell - can't avoid setup so most literate Haskell files have a lot of imports and noise.
 * Jupyter notebooks - You always have to open them with jupyter or convert them. Also can't really avoid setup.
@@ -19,6 +23,10 @@ cabal install
 ```
 
 ## Usage
+
+### Reactive notebooks
+
+Run `cabal run sabela-server`, open `localhost:3000/index.html` and explore `./examples/analysis.md` for a quick tutorial.
 
 ### Markdown notebook mode
 

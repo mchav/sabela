@@ -58,7 +58,7 @@ newSession cfg = do
            { std_in  = CreatePipe
            , std_out = CreatePipe
            , std_err = CreatePipe
-           , delegate_ctlc = True
+           , delegate_ctlc = False
            }
 
   (Just hIn, Just hOut, Just hErr, ph) <- createProcess cp
